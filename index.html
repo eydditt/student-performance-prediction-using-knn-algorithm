@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Student Performance Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+            color: #e5e7eb;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                         0 0 40px rgba(255, 255, 255, 0.5),
+                         0 0 60px rgba(255, 255, 255, 0.3);
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #93c5fd;
+            font-weight: 500;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        .card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .card-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-right: 8px;
+        }
+        
+        .card-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .card-content::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 3px;
+        }
+        
+        .card-content::-webkit-scrollbar-thumb {
+            background: rgba(96, 165, 250, 0.5);
+            border-radius: 3px;
+        }
+        
+        .card-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(96, 165, 250, 0.7);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 8px;
+            border-radius: 10px;
+            transition: background 0.2s ease;
+        }
+        
+        .form-row:hover {
+            background: rgba(96, 165, 250, 0.05);
+        }
+        
+        .form-row label {
+            font-size: 13px;
+            color: #e5e7eb;
+            font-weight: 500;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-row input[type="number"],
+        .form-row select {
+            width: 100px;
+            padding: 8px 12px;
+            background: rgba(30, 58, 138, 0.3);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 8px;
+            color: #e5e7eb;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .form-row input[type="number"]:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            background: rgba(30, 58, 138, 0.5);
+        }
+        
+        .form-row input[type="range"] {
+            width: 160px;
+            height: 8px;
+            background: rgba(30, 58, 138, 0.4);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .form-row input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+            transition: transform 0.2s ease;
+        }
+        
+        .form-row input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .form-row input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5);
+        }
+        
+        .value-display {
+            font-size: 13px;
+            font-weight: 700;
+            color: #60a5fa;
+            min-width: 35px;
+            text-align: center;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(100, 116, 139, 0.3);
+            color: #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(100, 116, 139, 0.5);
+            border-color: rgba(148, 163, 184, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .threshold-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .threshold-title {
+            font-size: 14px;
+            color: #93c5fd;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .threshold-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .threshold-control input[type="range"] {
+            flex: 1;
+            height: 10px;
+            background: rgba(30, 58, 138, 0.4);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .threshold-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 3px 10px rgba(59, 130, 246, 0.6);
+        }
+        
+        .threshold-value {
+            font-size: 16px;
+            font-weight: 900;
+            color: #60a5fa;
+            background: rgba(30, 58, 138, 0.4);
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .prediction {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .prediction.pass {
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+        }
+        
+        .prediction.fail {
+            color: #ef4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+        
+        .expected {
+            font-size: 13px;
+            color: #93c5fd;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .progress-row {
+            margin-bottom: 18px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .progress-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #e5e7eb;
+        }
+        
+        .progress-percent {
+            font-size: 15px;
+            font-weight: 900;
+        }
+        
+        .progress-percent.pass {
+            color: #22c55e;
+        }
+        
+        .progress-percent.fail {
+            color: #ef4444;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(30, 58, 138, 0.3);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 6px;
+        }
+        
+        .progress-fill.pass {
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+        }
+        
+        .progress-fill.fail {
+            background: linear-gradient(90deg, #ef4444, #dc2626);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+        }
+        
+        .status {
+            font-size: 12px;
+            color: #93c5fd;
+            margin-top: 12px;
+            padding: 8px 12px;
+            background: rgba(30, 58, 138, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .results-section {
+                grid-column: 1 / -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                height: auto;
+            }
+            
+            .card-content {
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Student Performance Predictor</h1>
+            <p>AI-Powered Academic Success Predicting Using K-Nearest Neighbors</p>
+        </div>
+        
+        <div class="main-content">
+            <!-- Academic Card -->
+            <div class="card">
+                <div class="card-title">📚 Academic Factors</div>
+                <div class="card-content">
+                    <div class="form-row">
+                        <label>Class Attendance (%)</label>
+                        <div class="input-group">
+                            <input type="range" id="attendance" min="0" max="100" value="85" oninput="updateValue('attendance')">
+                            <span class="value-display" id="attendance-val">85</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Quiz Score (%)</label>
+                        <input type="number" id="quizzes" min="0" max="100" value="75">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Overall Assignment Grade (%)</label>
+                        <input type="number" id="assignments" min="0" max="100" value="78">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Midterm Exam Score (%)</label>
+                        <input type="number" id="midterm" min="0" max="100" value="70">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Class Participation Score</label>
+                        <input type="number" id="participation" min="0" max="100" value="80">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Current Project Score (%)</label>
+                        <input type="number" id="projects" min="0" max="100" value="82">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Participates in Extracurriculars?</label>
+                        <select id="extracurricular">
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Behavioral Card -->
+            <div class="card">
+                <div class="card-title">🧠 Behavioral Factors</div>
+                <div class="card-content">
+                    <div class="form-row">
+                        <label>Study Hours per Week</label>
+                        <input type="number" id="study-hours" min="0" max="80" value="12">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Sleep Hours per Night</label>
+                        <input type="number" id="sleep-hours" min="0" max="14" step="0.5" value="7.0">
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Stress Level (1-10)</label>
+                        <div class="input-group">
+                            <input type="range" id="stress" min="1" max="10" value="5" oninput="updateValue('stress')">
+                            <span class="value-display" id="stress-val">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="buttons">
+                    <button class="btn btn-primary" onclick="predict()">🔮 Predict</button>
+                    <button class="btn btn-secondary" onclick="clearForm()">🔄 Reset</button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="results-section">
+                <!-- Threshold Card -->
+                <div class="threshold-card">
+                    <div class="threshold-title">⚙️ Decision Threshold</div>
+                    <div class="threshold-control">
+                        <input type="range" id="threshold" min="0.30" max="0.70" step="0.01" value="0.50" oninput="updateThreshold()">
+                        <span class="threshold-value" id="threshold-val">0.50</span>
+                    </div>
+                </div>
+                
+                <!-- Results Card -->
+                <div class="card">
+                    <div class="card-title">🎯 Prediction Results</div>
+                    <div class="card-content">
+                        <div class="prediction" id="prediction">Predicted: —</div>
+                        <div class="expected" id="expected">Expected grades: —</div>
+                        
+                        <div class="progress-row">
+                            <div class="progress-header">
+                                <span class="progress-label">Pass Probability</span>
+                                <span class="progress-percent pass" id="pass-label">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill pass" id="pass-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="progress-row">
+                            <div class="progress-header">
+                                <span class="progress-label">Fail Probability</span>
+                                <span class="progress-percent fail" id="fail-label">0%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill fail" id="fail-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="status" id="status">Ready to predict</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateValue(id) {
+            const input = document.getElementById(id);
+            const display = document.getElementById(id + '-val');
+            display.textContent = Math.round(input.value);
+        }
+        
+        function updateThreshold() {
+            const threshold = document.getElementById('threshold');
+            const display = document.getElementById('threshold-val');
+            display.textContent = parseFloat(threshold.value).toFixed(2);
+        }
+        
+        async function predict() {
+            const status = document.getElementById('status');
+            status.textContent = '🔄 Analyzing data...';
+            
+            const data = {
+                "Attendance (%)": parseFloat(document.getElementById('attendance').value),
+                "Quizzes_Avg": parseFloat(document.getElementById('quizzes').value),
+                "Assignments_Avg": parseFloat(document.getElementById('assignments').value),
+                "Midterm_Score": parseFloat(document.getElementById('midterm').value),
+                "Participation_Score": parseFloat(document.getElementById('participation').value),
+                "Projects_Score": parseFloat(document.getElementById('projects').value),
+                "Study_Hours_per_Week": parseFloat(document.getElementById('study-hours').value),
+                "Sleep_Hours_per_Night": parseFloat(document.getElementById('sleep-hours').value),
+                "Stress_Level (1-10)": parseFloat(document.getElementById('stress').value),
+                "Extracurricular_Activities": document.getElementById('extracurricular').value,
+                "threshold": parseFloat(document.getElementById('threshold').value)
+            };
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    alert('Error: ' + result.error);
+                    status.textContent = '❌ Prediction failed';
+                    return;
+                }
+                
+                // Update prediction with styling
+                const predElement = document.getElementById('prediction');
+                predElement.textContent = 'Predicted: ' + result.prediction;
+                predElement.className = 'prediction ' + (result.prediction === 'PASS' ? 'pass' : 'fail');
+                
+                document.getElementById('expected').textContent = '📊 Expected grades: ' + result.expected_grades;
+                
+                // Update progress bars
+                document.getElementById('pass-bar').style.width = result.pass_prob + '%';
+                document.getElementById('fail-bar').style.width = result.fail_prob + '%';
+                document.getElementById('pass-label').textContent = result.pass_prob + '%';
+                document.getElementById('fail-label').textContent = result.fail_prob + '%';
+                
+                status.textContent = '✅ Prediction complete';
+            } catch (error) {
+                alert('Error: ' + error.message);
+                status.textContent = '❌ Connection error';
+            }
+        }
+        
+        function clearForm() {
+            document.getElementById('attendance').value = 85;
+            document.getElementById('quizzes').value = 75;
+            document.getElementById('assignments').value = 78;
+            document.getElementById('midterm').value = 70;
+            document.getElementById('participation').value = 80;
+            document.getElementById('projects').value = 82;
+            document.getElementById('extracurricular').value = 'Yes';
+            document.getElementById('study-hours').value = 12;
+            document.getElementById('sleep-hours').value = 7.0;
+            document.getElementById('stress').value = 5;
+            document.getElementById('threshold').value = 0.50;
+            
+            updateValue('attendance');
+            updateValue('stress');
+            updateThreshold();
+            
+            const predElement = document.getElementById('prediction');
+            predElement.textContent = 'Predicted: —';
+            predElement.className = 'prediction';
+            
+            document.getElementById('expected').textContent = 'Expected grades: —';
+            document.getElementById('pass-bar').style.width = '0%';
+            document.getElementById('fail-bar').style.width = '0%';
+            document.getElementById('pass-label').textContent = '0%';
+            document.getElementById('fail-label').textContent = '0%';
+            document.getElementById('status').textContent = 'Ready to predict';
+        }
+        
+        // Allow Enter key to trigger prediction
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                predict();
+            }
+        });
+    </script>
+</body>
+</html>
