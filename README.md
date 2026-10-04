@@ -35,7 +35,8 @@ The model was evaluated with a strict focus on **Recall** (Sensitivity) for the 
 1. **Clone the repository:**
    ```bash
    git clone [https://github.com/eydditt/student-performance-prediction-using-knn-algorithm.git](https://github.com/eydditt/student-performance-prediction-using-knn-algorithm.git)
-   cd student-performance-prediction-using-knn-algorithm
+
+    cd student-performance-prediction-using-knn-algorithm
 
    pip install pandas numpy scikit-learn imbalanced-learn flask matplotlib seaborn
 
